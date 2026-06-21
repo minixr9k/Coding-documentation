@@ -60,7 +60,7 @@
 
         <section id="commands">
             <h1>Команды управления</h1>
-            <p>Основные команды для работы со скриптами в вашем мире (максимум 10 файлов на мир):</p>
+            <p>Основные команды для работы со скриптами в вашем мире (максимум 10 файлов на мир):
             <table>
                 <tr><th>Команда</th><th>Описание</th></tr>
                 <tr><td><span class="cmd-arg">/code create &lt;имя&gt;</span></td><td>Создать новый file скрипта в текущем мире</td></tr>
@@ -275,11 +275,42 @@
             player.<span class="function">msg</span>(<span class="string">"&bАртефакт активирован! Скорость выдана на 7 секунд."</span>)
             
             <span class="comment">// Включаем кулдаун на предмет FEATHER на 10 секунд</span>
-            player.<span class="function">cooldown</span>(<span class="string">"FEATHER"</span>, <span class="number">10</span>)
+            player.<span class="function">cooldown</span>("FEATHER", <span class="number">10</span>)
         }
     }
 }</code></pre>
             </div>
+
+            <h3>Пример 4: Перо отталкивания / прыжка (Leap Feather)</h3>
+            <p>При использовании пера игрок ускоряется в направлении взгляда (подбрасывается вперед), воспроизводится звук взлета летучей мыши и устанавливается перезарядка в 5 секунд.</p>
+            <div class="code-window">
+<pre><code><span class="attr">@event</span>
+<span class="keyword">void</span> <span class="function">onLeapFeather</span>(InteractEvent e) {
+    <span class="keyword">if</span> (action == <span class="string">"RIGHT_CLICK_BLOCK"</span> || action == <span class="string">"RIGHT_CLICK_AIR"</span>) {
+        <span class="keyword">if</span> (player.handItem == <span class="string">"FEATHER"</span>) {
+            player.<span class="function">push</span>(<span class="number">2.5</span>)
+            player.<span class="function">playSound</span>(<span class="string">"entity.bat.takeoff"</span>, <span class="number">1.0</span>, <span class="number">1.0</span>)
+            player.<span class="function">cooldown</span>(<span class="string">"FEATHER"</span>, <span class="number">5</span>)
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h3>Пример 5: Железная автоматическая пушка (Iron Cannon)</h3>
+            <p>Кликая железной конской броней, игрок быстрой очередью выпускает стрелы со звуком выстрела арбалета. Кулдаун составляет всего 0.15 секунды.</p>
+            <div class="code-window">
+<pre><code><span class="attr">@event</span>
+<span class="keyword">void</span> <span class="function">onIronCannon</span>(InteractEvent e) {
+    <span class="keyword">if</span> (action == <span class="string">"RIGHT_CLICK_BLOCK"</span> || action == <span class="string">"RIGHT_CLICK_AIR"</span>) {
+        <span class="keyword">if</span> (player.handItem == <span class="string">"IRON_HORSE_ARMOR"</span>) {
+            player.<span class="function">launch</span>(<span class="string">"ARROW"</span>, <span class="number">1.0</span>)
+            player.<span class="function">playSound</span>(<span class="string">"item.crossbow.shoot"</span>, <span class="number">1.0</span>, <span class="number">1.0</span>)
+            player.<span class="function">cooldown</span>(<span class="string">"IRON_HORSE_ARMOR"</span>, <span class="number">0.15</span>)
+        }
+    }
+}</code></pre>
+            </div>
+
             <div class="warning-box">
                 <b>Примечание по Кулдаунам:</b> Проверять кулдаун вручную через <code>if</code> в коде <b>не нужно</b>. Когда на предмет наложен кулдаун, Майнкрафт автоматически блокирует клики, и это событие просто не будет вызываться движком, пока перезарядка не пройдет!
             </div>
@@ -289,7 +320,7 @@
             <h2>Изменение Хранилищ и Выдача Лута</h2>
             <p>Умные методы для работы с контейнерами (сундуки, бочки, шалкеры):</p>
             <ul>
-                <li><code>world.copy(x1,y1,z1, x2,y2,z2)</code> — копирует содержимое контейнера с координатной точки 1 в точку 2.
+                <li><code>world.copy(x1,y1,z1, x2,y2,z2)</code> — копирует содержимое контейнера с координатной точки 1 в точку 2.</li>
                 <li><code>player.giveLoot(x,y,z)</code> — опустошает сундук/бочку на координатах и выдает весь его лут напрямую в инвентарь игроку с полным сохранением NBT (зачарования, прочность, кастомные имена). Если инвентарь забьется — остатки красиво упадут под ноги.</li>
             </ul>
 
@@ -357,7 +388,7 @@ player.<span class="function">stopAllSounds</span>()                         <sp
             <h3>Удаление существ:</h3>
             <div class="code-window">
 <pre><code><span class="comment">// Уничтожает сущность в мире, которая была записано в переменную boss_mob</span>
-world.<span class="function">remove</span>(boss_mob)
+world.<span class="function">remove</span>(boss_mob)</code></pre>
             </div>
         </section>
 
