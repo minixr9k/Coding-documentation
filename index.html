@@ -60,7 +60,7 @@
 
         <section id="commands">
             <h1>Команды управления</h1>
-            <p>Основные команды для работы со скриптами в вашем мире (максимум 10 файлов на мир):
+            <p>Основные команды для работы со скриптами в вашем мире (максимум 10 файлов на мир):</p>
             <table>
                 <tr><th>Команда</th><th>Описание</th></tr>
                 <tr><td><span class="cmd-arg">/code create &lt;имя&gt;</span></td><td>Создать новый file скрипта в текущем мире</td></tr>
@@ -140,12 +140,27 @@
                 <tr><td><span class="badge">BlockBreakEvent</span></td><td>Разрушение блока игроком</td></tr>
                 <tr><td><span class="badge">BlockPlaceEvent</span></td><td>Установка блока игроком</td></tr>
                 <tr><td><span class="badge">InteractEvent</span></td><td>Любое взаимодействие (ПКМ/ЛКМ по блоку, плиты, кнопки)</td></tr>
-                <tr><td><span class="badge">ChatEvent</span> <span style="color: var(--accent);">• New</span></td><td>Игрок отправляет сообщение в чат мира</td></tr>
-                <tr><td><span class="badge">DropItemEvent</span> <span style="color: var(--accent);">• New</span></td><td>Игрок выбрасывает предмет из инвентаря</td></tr>
-                <tr><td><span class="badge">InteractEntityEvent</span> <span style="color: var(--accent);">• New</span></td><td>Игрок кликает по сущности (NPC, рамке, мобу)</td></tr>
+                <tr><td><span class="badge">ChatEvent</span></td><td>Игрок отправляет сообщение в чат мира</td></tr>
+                <tr><td><span class="badge">DropItemEvent</span></td><td>Игрок выбрасывает предмет из инвентаря</td></tr>
+                <tr><td><span class="badge">InteractEntityEvent</span></td><td>Игрок кликает по сущности (NPC, рамке, мобу)</td></tr>
+                <tr><td><span class="badge">PickupItemEvent</span> <span style="color: var(--accent);">• Updated</span></td><td>Игрок пытается подобрать лежащий предмет с земли</td></tr>
+                <tr><td><span class="badge">PlayerSneakEvent</span> <span style="color: var(--accent);">• Updated</span></td><td>Игрок приседает (нажимает или отжимает Shift)</td></tr>
+                <tr><td><span class="badge">PlayerSprintEvent</span> <span style="color: var(--accent);">• Updated</span></td><td>Игрок начинает или прекращает быстрый бег (спринт)</td></tr>
                 <tr><td><span class="badge">DeathEvent</span></td><td>Смерть игрока</td></tr>
                 <tr><td><span class="badge">RespawnEvent</span></td><td>Возрождение игрока</td></tr>
             </table>
+
+            <h3>Пример использования PickupItemEvent</h3>
+            <p>Запрещает подбирать абсолютно любые лежащие на земле предметы, если игрок находится в режиме приключения (ADVENTURE).</p>
+            <div class="code-window">
+<pre><code><span class="attr">@event</span>
+<span class="keyword">void</span> <span class="function">onItemPickupCheck</span>(PickupItemEvent e) {
+    <span class="keyword">if</span> (player.gamemode == <span class="string">"ADVENTURE"</span>) {
+        <span class="comment">// Отменяем подбор предмета</span>
+        event.<span class="function">cancel</span>()
+    }
+}</code></pre>
+            </div>
         </section>
 
         <section id="variables">
@@ -156,33 +171,59 @@
             <div class="info-box">
                 <b>player.name</b> — Никнейм игрока, запустившего событие.<br>
                 <b>player.gamemode</b> — Текущий режим игры ("SURVIVAL", "CREATIVE", "ADVENTURE", "SPECTATOR").<br>
+                <b>player.level</b> — Текущий уровень опыта игрока.<br>
+                <b>player.exp</b> — Точный чистый прогресс по шкале текущего уровня (от 0.0 до 1.0).<br>
+                <b>player.food</b> — Уровень индикатора сытости/голода игрока (от 0 до 20).<br>
+                <b>player.saturation</b> — Текущий уровень насыщенности (скрытая шкала сытости).<br>
+                <b>player.health</b> — Количество текущего здоровья игрока (например, 20.0).<br>
+                <b>player.isFlying</b> — Летит ли игрок в данный момент (true/false).<br>
+                <b>player.isAllowFlight</b> — Разрешен ли полет на сервере для этого игрока (true/false).<br>
+                <b>player.isOnGround</b> — Находится ли игрок твердо на блоке/земле (true/false).<br>
+                <b>player.isGliding</b> — Парит ли игрок на элитрах (true/false).<br>
+                <b>player.isGlowing</b> — Имеет ли игрок эффект контурного свечения (true/false).<br>
+                <b>player.isSprinting</b> — Находится ли игрок в состоянии быстрого бега (true/false).<br>
+                <b>player.isSneaking</b> — Находится ли игрок в приседе/на шифте (true/false).<br>
+                <b>player.locale</b> — Языковой пакет клиента в нижнем регистре (например, "ru_ru", "en_us").<br>
+                <b>player.ping</b> — Текущий замер сетевого пинга игрока в миллисекундах.<br>
+                <b>player.x, player.y, player.z</b> — Округленные до целого числа координаты местоположения игрока.<br>
                 <b>player.handItem</b> — Название предмета в главной руке игрока (если рука пуста — "AIR").<br>
-                <b>player.handAmount</b> — Количество предметов в главной руке игрока (строка, от "0" до "64").
+                <b>player.handItem.cmd</b> — Custom Model Data предмета из NBT (если присутствует).<br>
+                <b>player.handItem.name</b> — Кастомное отображаемое имя предмета (если переименован).
+            </div>
+
+            <h3>Системные данные текущего мира (World):</h3>
+            <div class="info-box">
+                <b>world.name</b> — Строковое название текущего загруженного подмира.<br>
+                <b>world.playercount</b> — Число active игроков, находящихся в этом мире в данный момент.
             </div>
 
             <h3>Переменные контекста событий:</h3>
             <div class="info-box">
-                <b>event_type</b> — Тип текущего события ("CHAT", "DROP_ITEM", "INTERACT_ENTITY").<br>
+                <b>event_type</b> — Тип текущего события ("CHAT", "DROP_ITEM", "INTERACT_ENTITY", "PICK_ITEM", "TOGGLE_SNEAK", "TOGGLE_SPRINT").<br>
                 <b>block_type</b> — Материал блока (для Interact/Place/Break, например "STONE", "GOLD_BLOCK").<br>
                 <b>block_x, block_y, block_z</b> — Координаты блока в мире (числа).<br>
                 <b>action</b> — Тип клика (актуально для InteractEvent: "RIGHT_CLICK_BLOCK", "PHYSICAL").<br>
                 <b>message</b> — Текст сообщения из чата (Доступно только в <span class="badge">ChatEvent</span>).<br>
-                <b>item_type</b> — Материал выброшенного на землю предмета (Доступно только в <span class="badge">DropItemEvent</span>).<br>
+                <b>item_type</b> — Материал выброшенного/подбираемого предмета (Доступно в <span class="badge">DropItemEvent</span> и <span class="badge">PickupItemEvent</span>).<br>
                 <b>entity_type</b> — Тип существа, по которому кликнули (для InteractEntityEvent, например "VILLAGER", "ITEM_FRAME").<br>
-                <b>frame_item</b> — Если кликнули по рамке, вернет тип лежащего в ней предмета (если пустая — "AIR").
+                <b>frame_item</b> — Если кликнули по рамке, вернет тип лежащего в ней предмета (если пустая — "AIR").<br>
+                <b>is_sneaking</b> — Итоговое состояние приседания после изменения (true/false, доступно только в <span class="badge">PlayerSneakEvent</span>).<br>
+                <b>is_sprinting</b> — Итоговое состояние бега после изменения (true/false, доступно только в <span class="badge">PlayerSprintEvent</span>).
             </div>
         </section>
 
         <section id="text-methods">
             <h2>Продвинутые текстовые методы</h2>
-            <p>Для любых строковых данных (например, переменной <code>message</code>) можно использовать встроенные методы логической проверки:</p>
+            <p>Для любых строковых данных (например, переменной <code>message</code>) можно использовать встроенные методы логической проверки, а также вычисление длины и подстроки:</p>
             <ul>
                 <li><code>.startsWith("текст")</code> — Истинно, если строка начинается с этого фрагмента.</li>
                 <li><code>.endsWith("текст")</code> — Истинно, если строка оканчивается этим фрагментом.</li>
                 <li><code>.contains("текст")</code> — Истинно, если фрагмент найден в любом месте строки.</li>
+                <li><code>.length()</code> — Возвращает число, содержащее общую длину строки в символах.</li>
+                <li><code>.substring(beginIndex)</code> или <code>.substring(beginIndex, endIndex)</code> — Обрезает и возвращает часть строки по указанным индексам (поддерживает динамические аргументы-переменные и имеет автоматическую встроенную защиту от крашей при выходе за реальные границы строки).</li>
             </ul>
 
-            <h3>Пример: Проигрывание звука по сообщению</h3>
+            <h3>Пример 1: Проигрывание звука по сообщению</h3>
             <div class="code-window">
 <pre><code><span class="attr">@event</span>
 <span class="keyword">void</span> <span class="function">onChatCheck</span>(ChatEvent e) {
@@ -191,10 +232,23 @@
     }
 }</code></pre>
             </div>
+
+            <h3>Пример 2: Получение длины строки и создание подстроки</h3>
+            <div class="code-window">
+<pre><code><span class="attr">@event</span>
+<span class="keyword">void</span> <span class="function">onSubstringDemo</span>(ChatEvent e) {
+    <span class="keyword">var</span> len = message.<span class="function">length</span>()
+    <span class="keyword">if</span> (len > <span class="number">5</span>) {
+        <span class="comment">// Безопасно вырезаем первые 5 символов сообщения</span>
+        <span class="keyword">var</span> firstFive = message.<span class="function">substring</span>(<span class="number">0</span>, <span class="number">5</span>)
+        player.<span class="function">msg</span>(<span class="string">"&eПервые 5 символов: %firstFive%"</span>)
+    }
+}</code></pre>
+            </div>
         </section>
 
         <section id="logic">
-            <h2>Переменные и Рандом</h2>
+            <h2>Переменные, Рандом и Циклы</h2>
             <p><b>Глобальные:</b> доступны всегда во всех файлах этого мира (пишутся без <code>var</code>).<br>
             <b>Локальные:</b> доступны только внутри выполнения конкретной функции (пишутся с <code>var</code>).</p>
             <div class="code-window">
@@ -223,10 +277,53 @@
     player.<span class="function">msg</span>(<span class="string">"&2%text%"</span>)
 }</code></pre>
             </div>
+
+            <h3>Поиск игрока мира: world.getPlayer()</h3>
+            <p>Динамически находит игрока в текущем мире по его имени и инжектирует в локальную область памяти переменные с его текущими параметрами, используя имя переменной в виде префикса.</p>
+            <div class="code-window">
+<pre><code><span class="attr">@event</span>
+<span class="keyword">void</span> <span class="function">onFindPlayer</span>(ChatEvent e) {
+    <span class="keyword">if</span> (message.<span class="function">startsWith</span>(<span class="string">"@check "</span>)) {
+        <span class="keyword">var</span> nameArg = message.<span class="function">substring</span>(<span class="number">7</span>)
+        
+        <span class="comment">// Находим игрока</span>
+        <span class="keyword">var</span> target = world.<span class="function">getPlayer</span>(nameArg)
+        
+        <span class="keyword">if</span> (target != none) {
+            player.<span class="function">msg</span>(<span class="string">"&aИгрок %nameArg% онлайн! Его здоровье: %target.health%, уровень: %target.level%"</span>)
+        } <span class="keyword">else</span> {
+            player.<span class="function">msg</span>(<span class="string">"&cИгрок %nameArg% не найден в этом мире!"</span>)
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h3>🔄 Глобальный цикл по игрокам мира (ЭКСПЕРИМЕНТАЛЬНО)</h3>
+            <p>Конструкция <code>forEachPlayer { ... }</code> позволяет выполнить вложенный блок кода для каждого игрока, находящегося в текущем мире исполнителя. Внутри тела цикла автоматически генерируются изолированные свойства с префиксом <code>target.</code>, отражающие параметры итерируемого игрока в реальном времени.</p>
+            
+            <div class="code-window">
+<pre><code><span class="attr">@event</span>
+<span class="keyword">void</span> <span class="function">onLevelBuff</span>(InteractEvent e) {
+    <span class="keyword">if</span> (action == <span class="string">"RIGHT_CLICK_BLOCK"</span> && block_type == <span class="string">"DIAMOND_BLOCK"</span>) {
+        
+        player.<span class="function">msg</span>(<span class="string">"&aЗапуск сканирования мира... Раздача регенерации новичкам!"</span>)
+
+        <span class="comment">// Запускаем цикл по всем игрокам мира</span>
+        <span class="function">forEachPlayer</span> {
+            <span class="comment">// Проверяем уровень опыта конкретного перебираемого игрока (target)</span>
+            <span class="keyword">if</span> (target.level == <span class="number">1</span>) {
+                <span class="comment">// Накладываем Регенерацию I на 10 секунд на цель</span>
+                target.<span class="function">effect</span>(<span class="string">"REGENERATION"</span>, <span class="number">10</span>, <span class="number">1</span>)
+                target.<span class="function">msg</span>(<span class="string">"&aВам выдана Регенерация, так как ваш уровень равен 1!"</span>)
+            }
+        }
+    }
+}</code></pre>
+            </div>
         </section>
 
         <section id="inventory">
-            <h2>Работа с Инвентарем и Кулдаунами</h2>
+            <h2>Работа с Инвентарем, Кулдаунами и Задержками</h2>
 
             <h3>Пример 1: Выдача предмета при входе в мир</h3>
             <p>Когда новый игрок заходит в ваш мир, скрипт автоматически добавляет в его инвентарь 16 единиц хлеба.</p>
@@ -300,13 +397,31 @@
             <p>Кликая железной конской броней, игрок быстрой очередью выпускает стрелы со звуком выстрела арбалета. Кулдаун составляет всего 0.15 секунды.</p>
             <div class="code-window">
 <pre><code><span class="attr">@event</span>
-<span class="keyword">void</span> <span class="function">onIronCannon</span>(InteractEvent e) {
+<span class="keyword">void</span> <span class="function">onIronCannon</span>(IronCannon e) {
     <span class="keyword">if</span> (action == <span class="string">"RIGHT_CLICK_BLOCK"</span> || action == <span class="string">"RIGHT_CLICK_AIR"</span>) {
         <span class="keyword">if</span> (player.handItem == <span class="string">"IRON_HORSE_ARMOR"</span>) {
             player.<span class="function">launch</span>(<span class="string">"ARROW"</span>, <span class="number">1.0</span>)
             player.<span class="function">playSound</span>(<span class="string">"item.crossbow.shoot"</span>, <span class="number">1.0</span>, <span class="number">1.0</span>)
             player.<span class="function">cooldown</span>(<span class="string">"IRON_HORSE_ARMOR"</span>, <span class="number">0.15</span>)
         }
+    }
+}</code></pre>
+            </div>
+
+            <h3>⏱️ Планирование асинхронных задержек времени</h3>
+            <p>Методы <code>wait(секунды)</code> и <code>waitTicks(игровые_тики)</code> приостанавливают проход текущих строк кода, полностью изолируя и копируя текущее состояние памяти <code>localVars</code>, и переносят оставшиеся инструкции в планировщик Bukkit.</p>
+            <div class="code-window">
+<pre><code><span class="attr">@event</span>
+<span class="keyword">void</span> <span class="function">onDelayedTrap</span>(InteractEvent e) {
+    <span class="keyword">if</span> (action == <span class="string">"RIGHT_CLICK_BLOCK"</span> && block_type == <span class="string">"OAK_BUTTON"</span>) {
+        player.<span class="function">msg</span>(<span class="string">"&cЛовушка взведена! Бегите..."</span>)
+        
+        <span class="comment">// задержка 5 секунд (в тики переведется автоматически)</span>
+        <span class="function">wait</span>(<span class="number">5</span>)
+        
+        <span class="comment">// Выполнение продолжится планировщиком с сохраненными переменными</span>
+        player.<span class="function">playSound</span>(<span class="string">"entity.generic.explode"</span>, <span class="number">1.0</span>, <span class="number">1.0</span>)
+        player.<span class="function">msg</span>(<span class="string">"&4БУМ!"</span>)
     }
 }</code></pre>
             </div>
@@ -387,7 +502,7 @@ player.<span class="function">stopAllSounds</span>()                         <sp
 
             <h3>Удаление существ:</h3>
             <div class="code-window">
-<pre><code><span class="comment">// Уничтожает сущность в мире, которая была записано в переменную boss_mob</span>
+<pre><code><span class="comment">// Уничтожает сущность в мире, которая была записана в переменную boss_mob</span>
 world.<span class="function">remove</span>(boss_mob)</code></pre>
             </div>
         </section>
@@ -430,7 +545,7 @@ player.<span class="function">teleport</span>(Location(<span class="number">10.5
         </section>
 
         <footer style="padding: 2rem 0; border-top: 1px solid #334155; text-align: center; color: var(--text-muted);">
-            &copy; 2026 Xr9kCreator. v2.3
+            &copy; 2026 Xr9kCreator. v2.4 (Experimental Features Update)
         </footer>
     </main>
 
